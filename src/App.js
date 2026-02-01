@@ -1,24 +1,19 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Login from "./components/Login";
+import UploadVoterID from "./components/Voteridupload";
+import FaceScan from "./components/Facescan";
+import Voting from "./components/Voting";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/upload" element={<UploadVoterID />} />
+        <Route path="/facescan" element={<FaceScan />} /> {/* ✅ SAME PATH */}
+        <Route path="/vote" element={<Voting />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
