@@ -12,7 +12,6 @@ export default function FaceScan() {
       navigate("/");
       return;
     }
-
     if (!localStorage.getItem("voterIdImage")) {
       navigate("/upload");
       return;
@@ -21,11 +20,9 @@ export default function FaceScan() {
     navigator.mediaDevices
       .getUserMedia({ video: true })
       .then((stream) => {
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-        }
+        if (videoRef.current) videoRef.current.srcObject = stream;
       })
-      .catch(() => alert("Camera access denied"));
+      .catch(() => alert("❌ Camera access denied"));
   }, [navigate]);
 
   const captureFace = () => {
@@ -60,23 +57,49 @@ export default function FaceScan() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-pink-100">
-      <video ref={videoRef} autoPlay className="w-72 mb-4 rounded" />
+    <div className="min-h-screen flex flex-col items-center justify-center
+      bg-gradient-to-br from-pink-100 via-pink-200 to-pink-300
+      animate-fadeIn">
+
+      <h2 className="text-3xl font-bold text-pink-600 mb-6 animate-pulse">
+        🖼️ Face Scan
+      </h2>
+
+      <div className="relative w-80 md:w-96 h-96 md:h-[450px] mb-6 rounded-2xl overflow-hidden 
+        border-4 border-pink-300 shadow-inner bg-pink-50">
+        <video
+          ref={videoRef}
+          autoPlay
+          className={`w-full h-full object-cover rounded-2xl 
+            transition-all ${captured ? "opacity-70" : "opacity-100"}`}
+        />
+        {captured && (
+          <div className="absolute inset-0 flex items-center justify-center
+            bg-pink-200/40 text-pink-600 font-bold text-3xl animate-pulse rounded-2xl">
+            ✅ Face Captured
+          </div>
+        )}
+      </div>
+
       <canvas ref={canvasRef} hidden />
 
-      <button
-        onClick={captureFace}
-        className="mb-2 bg-pink-500 text-white px-4 py-2 rounded"
-      >
-        Capture Face
-      </button>
+      <div className="flex flex-col gap-4 w-80 md:w-96">
+        <button
+          onClick={captureFace}
+          className="bg-pink-500 text-white py-3 rounded-xl font-semibold 
+            shadow-md hover:scale-105 active:scale-95 transition-all"
+        >
+          Capture Face
+        </button>
 
-      <button
-        onClick={verify}
-        className="bg-pink-400 text-white px-4 py-2 rounded"
-      >
-        Verify & Continue
-      </button>
+        <button
+          onClick={verify}
+          className="bg-pink-400 text-white py-3 rounded-xl font-semibold
+            shadow-md hover:scale-105 active:scale-95 transition-all"
+        >
+          Verify & Continue
+        </button>
+      </div>
     </div>
   );
 }
