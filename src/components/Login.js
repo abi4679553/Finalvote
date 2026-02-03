@@ -34,15 +34,24 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center 
-      bg-gradient-to-br from-pink-100 via-pink-200 to-pink-300">
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden
+      bg-gradient-to-br from-pink-100 via-rose-200 to-pink-300">
 
-      <div className="bg-white/90 backdrop-blur-lg p-8 rounded-3xl 
-        shadow-2xl w-96 border border-pink-200
-        animate-fadeInUp">
+      {/* Floating background blobs */}
+      <div className="absolute w-72 h-72 bg-pink-300/40 rounded-full 
+        top-10 left-10 blur-3xl animate-blob"></div>
+      <div className="absolute w-72 h-72 bg-rose-400/40 rounded-full 
+        bottom-10 right-10 blur-3xl animate-blob animation-delay-2000"></div>
+
+      {/* Login Card */}
+      <div className="relative bg-white/90 backdrop-blur-xl p-8 rounded-3xl 
+        shadow-[0_20px_50px_rgba(255,105,180,0.35)]
+        w-96 border border-pink-200
+        animate-fadeInUp hover:scale-[1.02] transition-transform">
 
         <h2 className="text-3xl font-extrabold text-center mb-6 
-          text-pink-600 animate-pulse">
+          bg-gradient-to-r from-pink-500 to-rose-500 bg-clip-text text-transparent
+          animate-textGlow">
           Online Voting Login
         </h2>
 
@@ -55,8 +64,10 @@ export default function Login() {
               maxLength={f==="aadhaar"?12:f==="phone"?10:50}
               onChange={handleChange}
               className="w-full px-4 py-2 border border-pink-200 
-                rounded-xl focus:outline-none focus:ring-2 
-                focus:ring-pink-400 transition-all
+                rounded-xl bg-white/80
+                focus:outline-none focus:ring-2 
+                focus:ring-pink-400 focus:shadow-pink-300/50
+                transition-all duration-300
                 hover:scale-[1.02]"
             />
           ))}
@@ -64,19 +75,45 @@ export default function Login() {
 
         <button
           onClick={handleSubmit}
-          className="w-full mt-6 bg-gradient-to-r 
-            from-pink-400 to-pink-500
+          className="relative w-full mt-6 bg-gradient-to-r 
+            from-pink-400 to-rose-500
             text-white py-3 rounded-xl font-semibold
-            shadow-lg hover:shadow-pink-300/70
-            hover:scale-105 active:scale-95 transition-all"
+            shadow-lg overflow-hidden
+            hover:shadow-pink-400/70
+            hover:scale-105 active:scale-95 transition-all
+            before:absolute before:inset-0 before:bg-white/20
+            before:translate-x-[-100%] hover:before:translate-x-[100%]
+            before:transition-transform before:duration-700"
         >
           Next →
         </button>
 
-        <p className="text-xs text-center text-pink-400 mt-4">
-          Secure & Verified Voting System
+        <p className="text-xs text-center text-pink-400 mt-4 animate-fadeIn">
+          🔒 Secure & Verified Voting System
         </p>
       </div>
+
+      {/* Tailwind custom animations */}
+      <style>{`
+        @keyframes blob {
+          0%,100% { transform: translate(0,0) scale(1); }
+          33% { transform: translate(30px,-40px) scale(1.1); }
+          66% { transform: translate(-20px,20px) scale(0.95); }
+        }
+        .animate-blob {
+          animation: blob 8s infinite;
+        }
+        .animation-delay-2000 {
+          animation-delay: 2s;
+        }
+        @keyframes textGlow {
+          0%,100% { filter: drop-shadow(0 0 0px #ec4899); }
+          50% { filter: drop-shadow(0 0 8px #ec4899); }
+        }
+        .animate-textGlow {
+          animation: textGlow 2s infinite;
+        }
+      `}</style>
     </div>
   );
 }

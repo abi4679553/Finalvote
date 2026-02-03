@@ -5,7 +5,9 @@ export default function FaceScan() {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const navigate = useNavigate();
+
   const [captured, setCaptured] = useState(false);
+  const [status, setStatus] = useState("idle"); // idle | scanning | success
 
   useEffect(() => {
     if (!localStorage.getItem("isLoggedIn")) {
@@ -33,73 +35,83 @@ export default function FaceScan() {
     canvas.height = video.videoHeight;
 
     canvas.getContext("2d").drawImage(video, 0, 0);
-    localStorage.setItem("faceImage", canvas.toDataURL("image/png"));
+    const faceImage = canvas.toDataURL("image/png");
+
+    localStorage.setItem("faceImage", faceImage);
+    localStorage.setItem("faceVerified", "true"); // ✅ ALWAYS VERIFIED
+
     setCaptured(true);
-  };
+    setStatus("success");
 
-  const verify = () => {
-    if (!captured) {
-      alert("❌ Capture face first");
-      return;
-    }
-
-    const voterImage = localStorage.getItem("voterIdImage");
-    const faceImage = localStorage.getItem("faceImage");
-
-    // 🔥 FAKE FACE MATCH (Demo)
-    if (Math.abs(voterImage.length - faceImage.length) < 5000) {
-      alert("✅ Face matched");
-      localStorage.setItem("faceVerified", "true");
+    // ✅ DIRECTLY OPEN VOTING PAGE
+    setTimeout(() => {
       navigate("/vote");
-    } else {
-      alert("❌ Face not matched");
-    }
+    }, 1200);
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center
-      bg-gradient-to-br from-pink-100 via-pink-200 to-pink-300
-      animate-fadeIn">
+    <div className="relative min-h-screen flex flex-col items-center justify-center
+      bg-gradient-to-br from-pink-100 via-pink-200 to-pink-300 overflow-hidden">
 
-      <h2 className="text-3xl font-bold text-pink-600 mb-6 animate-pulse">
+      <h2 className="text-3xl font-extrabold mb-6
+        bg-gradient-to-r from-pink-500 to-rose-500
+        bg-clip-text text-transparent animate-textGlow">
         🖼️ Face Scan
       </h2>
 
-      <div className="relative w-80 md:w-96 h-96 md:h-[450px] mb-6 rounded-2xl overflow-hidden 
-        border-4 border-pink-300 shadow-inner bg-pink-50">
+      <div className="relative w-80 md:w-96 h-96 md:h-[450px] mb-6 rounded-3xl overflow-hidden
+        border-4 border-pink-300 bg-pink-50 shadow-lg">
+
         <video
           ref={videoRef}
           autoPlay
-          className={`w-full h-full object-cover rounded-2xl 
-            transition-all ${captured ? "opacity-70" : "opacity-100"}`}
+          className={`w-full h-full object-cover transition-all
+            ${captured ? "opacity-70 scale-105" : "opacity-100"}`}
         />
-        {captured && (
+
+        {!captured && (
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute w-full h-1 bg-pink-400/70 animate-scanLine"></div>
+          </div>
+        )}
+
+        {status === "success" && (
           <div className="absolute inset-0 flex items-center justify-center
-            bg-pink-200/40 text-pink-600 font-bold text-3xl animate-pulse rounded-2xl">
-            ✅ Face Captured
+            bg-green-200/50 text-green-700 font-bold text-3xl animate-bounce">
+            ✅ Face Scan Successful
           </div>
         )}
       </div>
 
       <canvas ref={canvasRef} hidden />
 
-      <div className="flex flex-col gap-4 w-80 md:w-96">
-        <button
-          onClick={captureFace}
-          className="bg-pink-500 text-white py-3 rounded-xl font-semibold 
-            shadow-md hover:scale-105 active:scale-95 transition-all"
-        >
-          Capture Face
-        </button>
+      <button
+        onClick={captureFace}
+        disabled={status !== "idle"}
+        className="bg-gradient-to-r from-pink-400 to-rose-500
+          text-white py-3 px-12 rounded-xl font-semibold
+          shadow-lg hover:scale-105 active:scale-95 transition-all
+          disabled:opacity-50"
+      >
+        Capture Face
+      </button>
 
-        <button
-          onClick={verify}
-          className="bg-pink-400 text-white py-3 rounded-xl font-semibold
-            shadow-md hover:scale-105 active:scale-95 transition-all"
-        >
-          Verify & Continue
-        </button>
-      </div>
+      <style>{`
+        @keyframes scanLine {
+          0% { top: 0%; }
+          100% { top: 100%; }
+        }
+        .animate-scanLine {
+          animation: scanLine 2.5s linear infinite;
+        }
+        @keyframes textGlow {
+          0%,100% { filter: drop-shadow(0 0 0px #ec4899); }
+          50% { filter: drop-shadow(0 0 10px #ec4899); }
+        }
+        .animate-textGlow {
+          animation: textGlow 2s infinite;
+        }
+      `}</style>
     </div>
   );
 }
